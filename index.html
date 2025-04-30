@@ -1,0 +1,723 @@
+<script type="text/javascript">
+    var gk_isXlsx = false;
+    var gk_xlsxFileLookup = {};
+    var gk_fileData = {};
+    function filledCell(cell) {
+        return cell !== '' && cell != null;
+    }
+    function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                    row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                    headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+    }
+</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Documentation for SmartUtilBot, a powerful Telegram bot with a wide range of utilities.">
+    <meta property="og:title" content="SmartUtilBot Documentation">
+    <meta property="og:description" content="Explore the features, installation guide, and more for SmartUtilBot.">
+    <title>SmartUtilBot Documentation</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- AOS CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-bg: #ffffff;
+            --secondary-bg: #f8f9fa;
+            --accent-color: #28a745;
+            --text-color: #333333;
+            --hover-scale: 1.05;
+            --shadow-color: rgba(0, 0, 0, 0.2);
+        }
+
+        body {
+            background-color: var(--primary-bg);
+            color: var(--text-color);
+            font-family: 'Poppins', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        .hero {
+            background: linear-gradient(to right, #e8f5e9, #c8e6c9);
+            padding: 120px 0;
+            text-align: center;
+            border-bottom: 2px solid var(--accent-color);
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-color);
+            text-shadow: 2px 2px 4px var(--shadow-color);
+        }
+
+        .hero p {
+            font-size: 1.6rem;
+            color: var(--text-color);
+        }
+
+        .navbar {
+            background-color: var(--secondary-bg);
+            box-shadow: 0 2px 8px var(--shadow-color);
+            transition: background-color 0.3s;
+        }
+
+        .navbar.scrolled {
+            background-color: var(--primary-bg);
+        }
+
+        .navbar .nav-link {
+            color: var(--text-color);
+            font-weight: 400;
+            transition: color 0.3s, transform 0.3s;
+        }
+
+        .navbar .nav-link:hover {
+            color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        section {
+            padding: 80px 0;
+        }
+
+        h2 {
+            color: var(--accent-color);
+            font-weight: 600;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        h2::after {
+            content: '';
+            width: 50px;
+            height: 3px;
+            background: var(--accent-color);
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+        }
+
+        .btn-custom {
+            background-color: var(--accent-color);
+            color: #ffffff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* White-black wash effect */
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s;
+        }
+
+        .btn-custom:hover {
+            transform: scale(var(--hover-scale));
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+            background-color: #218838;
+        }
+
+        .accordion-button {
+            background-color: var(--secondary-bg);
+            color: var(--text-color);
+            font-weight: 500;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .accordion-button:not(.collapsed) {
+            background-color: var(--accent-color);
+            color: #ffffff;
+        }
+
+        .accordion-body {
+            background-color: var(--primary-bg);
+            border: 1px solid #dee2e6;
+        }
+
+        .feature-item {
+            padding: 12px;
+            border-radius: 5px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .feature-item:hover {
+            background-color: #e8f5e9;
+            transform: translateX(8px);
+        }
+
+        pre {
+            background-color: var(--secondary-bg);
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            color: var(--text-color);
+            font-size: 0.95rem;
+        }
+
+        code {
+            font-family: 'Courier New', monospace;
+            color: var(--text-color);
+        }
+
+        #back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: none;
+            background-color: var(--accent-color);
+            color: #ffffff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            border: none;
+            padding: 12px 18px;
+            border-radius: 50%;
+            transition: transform 0.2s, opacity 0.3s;
+        }
+
+        #back-to-top:hover {
+            transform: scale(1.1);
+            opacity: 0.9;
+        }
+
+        footer {
+            background-color: var(--secondary-bg);
+            padding: 30px 0;
+            text-align: center;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .text-accent {
+            color: var(--accent-color);
+            transition: color 0.3s;
+        }
+
+        .text-accent:hover {
+            color: #1e7e34;
+        }
+
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Social Icons Styling */
+        .social-icons {
+            margin-top: 20px;
+        }
+
+        .social-icons a {
+            font-size: 2rem;
+            margin: 0 15px;
+            transition: transform 0.3s, opacity 0.3s;
+        }
+
+        .social-icons a:hover {
+            transform: scale(1.2);
+            opacity: 0.8;
+        }
+
+        .fa-facebook-f {
+            color: #1877f2; /* Facebook blue */
+        }
+
+        .fa-github {
+            color: #181717; /* GitHub black */
+        }
+
+        .fa-telegram {
+            color: #0088cc; /* Telegram blue */
+        }
+
+        .fa-instagram {
+            color: #e4405f; /* Instagram pink */
+        }
+
+        .fa-twitter {
+            color: #1da1f2; /* Twitter blue */
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1.2rem;
+            }
+
+            section {
+                padding: 50px 0;
+            }
+
+            .social-icons a {
+                font-size: 1.5rem;
+                margin: 0 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="container">
+            <h1>SmartUtilBot <i class="fab fa-telegram me-2 text-accent"></i></h1>
+            <p>Smart Util is the most complete bot designed to assist you with a wide array of tools.</p>
+            <a href="#installation" class="btn btn-custom mt-4">Get Started</a>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">SmartUtilBot <i class="fab fa-telegram me-2 text-accent"></i></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#introduction">Introduce</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#requirements">Libraries</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#environment-variables">Config</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#installation">Installation</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#youtube-cookies">Cookies</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contidiot">Contribute</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#credits">Devs</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#ethical-notice">Notice</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Introduction -->
+    <section id="introduction" class="container" data-aos="fade-up">
+        <h2>Introduction</h2>
+        <p>SmartUtilBot is a powerful Telegram bot built with Python and Pyrogram, designed to provide a wide range of utilities including credit card scraping, media downloading, AI-powered tools, and more. This bot leverages multiple APIs and services to deliver robust functionality for both casual and advanced users. ✨ Built With Python Language And Pyrogram Telethon Framework!</p>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="container" data-aos="fade-up">
+        <h2>Features 🌟</h2>
+        <div class="accordion" id="featuresAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingCredit">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCredit" aria-expanded="true" aria-controls="collapseCredit">
+                        Credit Card Tools
+                    </button>
+                </h2>
+                <div id="collapseCredit" class="accordion-collapse collapse show" aria-labelledby="headingCredit" data-bs-parent="#featuresAccordion">
+                    <div class="accordion-body">
+                        <ul class="list-unstyled">
+                            <li class="feature-item"><i class="fas fa-credit-card me-2 text-accent"></i> CC Generator: ᴄᴄ_✘_ɢᴇɴᴇʀᴀᴛᴏʀ↯</li>
+                            <li class="feature-item"><i class="fas fa-search me-2 text-accent"></i> Check BIN: ᴄʜᴇᴄᴋ_✘_ʙɪɴ↯</li>
+                            <li class="feature-item"><i class="fas fa-search-plus me-2 text-accent"></i> Check Multiple BINs: ᴄʜᴇᴄᴋ_ᴍᴜʟᴛɪᴘʟᴇ_✘_ʙɪɴꜱ↯</li>
+                            <li class="feature-item"><i class="fas fa-expand me-2 text-accent"></i> Extrapolate Credit Card Data from BIN: ᴇxᴛʀᴀᴘᴏʟᴀᴛᴇ_ᴄʀᴇᴅɪᴛ_✘_ᴄᴀʀᴅ_ᴅᴀᴛᴀ_ꜰʀᴏᴍ_ʙɪɴ↯</li>
+                            <li class="feature-item"><i class="fas fa-trophy me-2 text-accent"></i> Find Top BIN from Combo: ꜰɪɴᴅ_ᴛᴏᴘ_✘_ʙɪɴ_ꜰʀᴏᴍ_ᴄᴏᴍʙᴏ↯</li>
+                            <li class="feature-item"><i class="fas fa-download me-2 text-accent"></i> CC Scrape: ᴄᴄ_✘_ꜱᴄʀᴀᴘᴇ↯</li>
+                            <li class="feature-item"><i class="fas fa-filter me-2 text-accent"></i> Filter CCs: ꜰɪʟᴛᴇʀ_✘_ᴄᴄꜱ↯</li>
+                            <li class="feature-item"><i class="fas fa-plus me-2 text-accent"></i> Multi CC Generator: ᴍᴜʟᴛɪ_ᴄᴄ_✘_ɢᴇɴᴇʀᴀᴛᴏʀ↯</li>
+                            <li class="feature-item"><i class="fas fa-download me-2 text-accent"></i> Multi CC Scrape: ᴍᴜʟᴛɪ_ᴄᴄ_✘_ꜱᴄʀᴀᴘᴇ↯</li>
+                            <li class="feature-item"><i class="fas fa-database me-2 text-accent"></i> Find BIN Database: ꜰɪɴᴅ_ʙɪɴ_✘_ᴅᴀᴛᴀʙᴀꜱᴇ↯</li>
+                            <li class="feature-item"><i class="fas fa-filter me-2 text-accent"></i> Filter Specific BIN Cards: ꜰɪʟᴛᴇʀ_ꜱᴘᴇᴄɪꜰɪᴄ_✘_ʙɪɴ_ᴄᴀʀᴅꜱ↯</li>
+                            <li class="feature-item"><i class="fas fa-trash me-2 text-accent"></i> Remove Specific BIN Cards: ʀᴇᴍᴏᴠᴇ_ꜱᴘᴇᴄɪꜰɪᴄ_✘_ʙɪɴ_ᴄᴀʀᴅꜱ↯</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingAI">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAI" aria-expanded="false" aria-controls="collapseAI">
+                        AI Tools
+                    </button>
+                </h2>
+                <div id="collapseAI" class="accordion-collapse collapse" aria-labelledby="headingAI" data-bs-parent="#featuresAccordion">
+                    <div class="accordion-body">
+                        <ul class="list-unstyled">
+                            <li class="feature-item"><i class="fas fa-robot me-2 text-accent"></i> Talk to SmartAI: ᴛᴀʟᴋ_ᴛᴏ_✘_ꜱᴍᴀʀᴛᴀɪ↯</li>
+                            <li class="feature-item"><i class="fas fa-question me-2 text-accent"></i> Ask Question to ChatGPT-3.5: ᴀꜱᴋ_ǫᴜᴇꜱᴛɪᴏɴ_✘_ᴛᴏ_ᴄʜᴀᴛɢᴘᴛ_3.5↯</li>
+                            <li class="feature-item"><i class="fas fa-question me-2 text-accent"></i> Ask Question to ChatGPT-4: ᴀꜱᴋ_ǫᴜᴇꜱᴛɪᴏɴ_✘_ᴛᴏ_ᴄʜᴀᴛɢᴘᴛ_4↯</li>
+                            <li class="feature-item"><i class="fas fa-question me-2 text-accent"></i> Ask Question to Gemini AI: ᴀꜱᴋ_ǫᴜᴇꜱᴛɪᴏɴ_✘_ᴛᴏ_ɢᴇᴍɪɴɪ_ᴀɪ↯</li>
+                            <li class="feature-item"><i class="fas fa-image me-2 text-accent"></i> Image Analysis: ɪᴍᴀɢᴇ_ᴀɴᴀʟʏꜱɪꜱ_✘_ʀᴇᴀᴅ_ɪᴍᴀɢᴇ↯</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingMedia">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMedia" aria-expanded="false" aria-controls="collapseMedia">
+                        Media Downloaders
+                    </button>
+                </h2>
+                <div id="collapseMedia" class="accordion-collapse collapse" aria-labelledby="headingMedia" data-bs-parent="#featuresAccordion">
+                    <div class="accordion-body">
+                        <ul class="list-unstyled">
+                            <li class="feature-item"><i class="fab fa-facebook me-2 text-accent"></i> Download Facebook Video: ᴅᴏᴡɴʟᴏᴀᴅ_✘_ꜰᴀᴄᴇʙᴏᴏᴋ_ᴠɪᴅᴇᴏ↯</li>
+                            <li class="feature-item"><i class="fab fa-pinterest me-2 text-accent"></i> Download Pinterest Video: ᴅᴏᴡɴʟᴏᴀᴅ_✘_ᴘɪɴᴛᴇʀᴇꜱᴛ_ᴠɪᴅᴇᴏ↯</li>
+                            <li class="feature-item"><i class="fab fa-youtube me-2 text-accent"></i> Download YouTube Video: ᴅᴏᴡɴʟᴏᴀᴅ_✘_ʏᴏᴜᴛᴜʙᴇ_ᴠɪᴅᴇᴏ↯</li>
+                            <li class="feature-item"><i class="fab fa-instagram me-2 text-accent"></i> Download Instagram Reels: ᴅᴏᴡɴʟᴏᴀᴅ_✘_ɪɴꜱᴛᴀɢʀᴀᴍ_ʀᴇᴇʟꜱ↯</li>
+                            <li class="feature-item"><i class="fab fa-spotify me-2 text-accent"></i> Download Spotify Track: ᴅᴏᴡɴʟᴏᴀᴅ_✘_ꜱᴘᴏᴛɪꜰʏ_ᴛʀᴀᴄᴋ↯</li>
+                            <li class="feature-item"><i class="fas fa-music me-2 text-accent"></i> Download YouTube Audio: ᴅᴏᴡɴʟᴏᴀᴅ_✘_ʏᴏᴜᴛᴜʙᴇ_ᴀᴜᴅɪᴏ↯</li>
+                            <li class="feature-item"><i class="fas fa-video me-2 text-accent"></i> Convert Video to Audio: ᴄᴏɴᴠᴇʀᴛ_ᴠɪᴅᴇᴏ_✘_ᴛᴏ_ᴀᴜᴅɪᴏ↯</li>
+                            <li class="feature-item"><i class="fas fa-tags me-2 text-accent"></i> Extract YouTube Video Tags: ᴇxᴛʀᴀᴄᴛ_✘_ʏᴏᴜᴛᴜʙᴇ_ᴠɪᴅᴇᴏ_ᴛᴀɢꜱ↯</li>
+                            <li class="feature-item"><i class="fas fa-image me-2 text-accent"></i> Download YouTube Thumbnail: ᴅᴏᴡɴʟᴏᴀᴅ_✘_ʏᴏᴜᴛᴜʙᴇ_ᴛʜᴜᴍʙɴᴀɪʟ↯</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingText">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseText" aria-expanded="false" aria-controls="collapseText">
+                        Text & Encoding Tools
+                    </button>
+                </h2>
+                <div id="collapseText" class="accordion-collapse collapse" aria-labelledby="headingText" data-bs-parent="#featuresAccordion">
+                    <div class="accordion-body">
+                        <ul class="list-unstyled">
+                            <li class="feature-item"><i class="fas fa-lock me-2 text-accent"></i> Base64 Encode: ʙᴀꜱᴇ64_✘_ᴇɴᴄᴏᴅᴇ↯</li>
+                            <li class="feature-item"><i class="fas fa-unlock me-2 text-accent"></i> Base64 Decode: ʙᴀꜱᴇ64_✘_ᴅᴇᴄᴏᴅᴇ↯</li>
+                            <li class="feature-item"><i class="fas fa-lock me-2 text-accent"></i> Base32 Encode: ʙᴀꜱᴇ32_✘_ᴇɴᴄᴏᴅᴇ↯</li>
+                            <li class="feature-item"><i class="fas fa-unlock me-2 text-accent"></i> Base32 Decode: ʙᴀꜱᴇ32_✘_ᴅᴇᴄᴏᴅᴇ↯</li>
+                            <li class="feature-item"><i class="fas fa-lock me-2 text-accent"></i> Binary Encode: ʙɪɴᴀʀʏ_✘_ᴇɴᴄᴏᴅᴇ↯</li>
+                            <li class="feature-item"><i class="fas fa-unlock me-2 text-accent"></i> Binary Decode: ʙɪɴᴀʀʏ_✘_ᴅᴇᴄᴏᴅᴇ↯</li>
+                            <li class="feature-item"><i class="fas fa-lock me-2 text-accent"></i> Hex Encode: ʜᴇx_✘_ᴇɴᴄᴏᴅᴇ↯</li>
+                            <li class="feature-item"><i class="fas fa-unlock me-2 text-accent"></i> Hex Decode: ʜᴇx_✘_ᴅᴇᴄᴏᴅᴇ↯</li>
+                            <li class="feature-item"><i class="fas fa-lock me-2 text-accent"></i> Octal Encode: ᴏᴄᴛᴀʟ_✘_ᴇɴᴄᴏᴅᴇ↯</li>
+                            <li class="feature-item"><i class="fas fa-unlock me-2 text-accent"></i> Octal Decode: ᴏᴄᴛᴀʟ_✘_ᴅᴇᴄᴏᴅᴇ↯</li>
+                            <li class="feature-item"><i class="fas fa-undo me-2 text-accent"></i> Reverse Text: ʀᴇᴠᴇʀꜱᴇ_✘_ᴛᴇxᴛ↯</li>
+                            <li class="feature-item"><i class="fas fa-arrow-up me-2 text-accent"></i> Transform to Capital Letters: ᴛʀᴀɴꜱꜰᴏʀᴍ_ᴛᴏ_✘_ᴄᴀᴘɪᴛᴀʟ_ʟᴇᴛᴛᴇʀꜱ↯</li>
+                            <li class="feature-item"><i class="fas fa-arrow-down me-2 text-accent"></i> Transform to Small Letters: ᴛʀᴀɴꜱꜰᴏʀᴍ_ᴛᴏ_✘_ꜱᴍᴀʟʟ_ʟᴇᴛᴛᴇʀꜱ↯</li>
+                            <li class="feature-item"><i class="fas fa-calculator me-2 text-accent"></i> Count Words: ᴄᴏᴜɴᴛ_✘_ᴡᴏʀᴅꜱ↯</li>
+                            <li class="feature-item"><i class="fas fa-spell-check me-2 text-accent"></i> Fix Word Spelling: ꜰɪx_✘_ᴡᴏʀᴅ_ꜱᴘᴇʟʟɪɴɢ↯</li>
+                            <li class="feature-item"><i class="fas fa-grammar me-2 text-accent"></i> Fix Grammatical Issues: ꜰɪx_✘_ɢʀᴀᴍᴍᴀᴛɪᴄᴀʟ_ɪꜱꜱᴜᴇꜱ↯</li>
+                            <li class="feature-item"><i class="fas fa-book me-2 text-accent"></i> Check Synonyms and Antonyms: ᴄʜᴇᴄᴋ_✘_ꜱʏɴᴏɴʏᴍꜱ_ᴀɴᴅ_ᴀɴᴛᴏɴʏᴍꜱ↯</li>
+                            <li class="feature-item"><i class="fas fa-volume-up me-2 text-accent"></i> Check Pronunciation: ᴄʜᴇᴄᴋ_✘_ᴘʀᴏɴᴜɴᴄɪᴀᴛɪᴏɴ↯</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingMail">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMail" aria-expanded="false" aria-controls="collapseMail">
+                        Mail Tools
+                    </button>
+                </h2>
+                <div id="collapseMail" class="accordion-collapse collapse" aria-labelledby="headingMail" data-bs-parent="#featuresAccordion">
+                    <div class="accordion-body">
+                        <ul class="list-unstyled">
+                            <li class="feature-item"><i class="fas fa-envelope me-2 text-accent"></i> Filter/Extract Mails: ꜰɪʟᴛᴇʀ_✘_ᴇxᴛʀᴀᴄᴛ_ᴍᴀɪʟꜱ↯</li>
+                            <li class="feature-item"><i class="fas fa-key me-2 text-accent"></i> Filter/Extract Mail Passwords: ꜰɪʟᴛᴇʀ_✘_ᴇxᴛʀᴀᴄᴛ_ᴍᴀɪʟ_ᴘᴀꜱꜱᴡᴏʀᴅꜱ↯</li>
+                            <li class="feature-item"><i class="fas fa-download me-2 text-accent"></i> Mail-Pass Scrape for GC Targets: ᴍᴀɪʟ-ᴘᴀꜱꜱ_✘_ꜱᴄʀᴀᴘᴇ_ꜰᴏʀ_ɢᴄ_ᴛᴀʀɢᴇᴛꜱ↯</li>
+                            <li class="feature-item"><i class="fas fa-download me-2 text-accent"></i> Mail Scrape: ᴍᴀɪʟ_✘_ꜱᴄʀᴀᴘᴇ↯</li>
+                            <li class="feature-item"><i class="fas fa-plus me-2 text-accent"></i> Generate Random Mail with Password: ɢᴇɴᴇʀᴀᴛᴇ_✘_ʀᴀɴᴅᴏᴍ_ᴍᴀɪʟ_ᴡɪᴛʜ_ᴘᴀꜱꜱᴡᴏʀᴅ↯</li>
+                            <li class="feature-item"><i class="fas fa-inbox me-2 text-accent"></i> Check Recent 10 Mails: ᴄʜᴇᴄᴋ_✘_ʀᴇᴄᴇɴᴛ_10_ᴍᴀɪʟꜱ↯</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingMisc">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMisc" aria-expanded="false" aria-controls="collapseMisc">
+                        Miscellaneous Tools
+                    </button>
+                </h2>
+                <div id="collapseMisc" class="accordion-collapse collapse" aria-labelledby="headingMisc" data-bs-parent="#featuresAccordion">
+                    <div class="accordion-body">
+                        <ul class="list-unstyled">
+                            <li class="feature-item"><i class="fas fa-play me-2 text-accent"></i> Start Smart Tool: ꜱᴛᴀʀᴛ_ꜱᴍᴀʀᴛ_✘_ᴛᴏᴏʟ↯</li>
+                            <li class="feature-item"><i class="fab fa-telegram me-2 text-accent"></i> Pyrogram Telegram String Session: ᴘ�intrexpress("https://t.me/ISmartDevs") Pyrogram Telegram String Session: ᴘʏʀᴏɢʀᴀᴍ_✘_ᴛᴇʟᴇɢʀᴀᴍ_ꜱᴛʀɪɴɢ_ꜱᴇꜱꜱɪᴏɴ↯</li>
+                            <li class="feature-item"><i class="fab fa-telegram me-2 text-accent"></i> Telethon Telegram String Session: ᴛᴇʟᴇᴛʜᴏɴ_✘_ᴛᴇʟᴇɢʀᴀᴍ_ꜱᴛʀɪɴɢ_ꜱᴇꜱꜱɪᴏɴ↯</li>
+                            <li class="feature-item"><i class="fas fa-coins me-2 text-accent"></i> Real-Time Token Prices: ʀᴇᴀʟ-ᴛɪᴍᴇ_✘_ᴛᴏᴋᴇɴ_ᴘʀɪᴄᴇꜱ↯</li>
+                            <li class="feature-item"><i class="fas fa-exchange-alt me-2 text-accent"></i> Latest P2P Trades in BDT: ʟᴀᴛᴇꜱᴛ_✘_ᴘ2ᴘ_ᴛʀᴀᴅᴇꜱ_ɪɴ_ʙᴅᴛ↯</li>
+                            <li class="feature-item"><i class="fas fa-arrow-up me-2 text-accent"></i> Top Gainers List: ᴛᴏᴘ_✘_ɢᴀɪɴᴇʀꜱ_ʟɪꜱᴛ↯</li>
+                            <li class="feature-item"><i class="fas fa-arrow-down me-2 text-accent"></i> Top Losers List: ᴛᴏᴘ_✘_ʟᴏꜱᴇʀꜱ_ʟɪꜱᴛ↯</li>
+                            <li class="feature-item"><i class="fas fa-info-circle me-2 text-accent"></i> Get Info About Stripe Key: ɢᴇᴛ_✘_ɪɴꜰᴏ_ᴀʙᴏᴜᴛ_ꜱᴛʀɪᴘᴇ_ᴋᴇʏ↯</li>
+                            <li class="feature-item"><i class="fas fa-check-circle me-2 text-accent"></i> Check Stripe Key Live or Dead: ᴄʜᴇᴄᴋ_✘_ꜱᴛʀɪᴘᴇ_ᴋᴇʏ_ʟɪᴠᴇ_ᴏʀ_ᴅᴇᴀᴅ↯</li>
+                            <li class="feature-item"><i class="fas fa-network-wired me-2 text-accent"></i> Get IP Information: ɢᴇᴛ_✘_ɪᴘ_ɪɴꜰᴏʀᴍᴀᴛɪᴏɴ↯</li>
+                            <li class="feature-item"><i class="fas fa-shield-alt me-2 text-accent"></i> Proxy Checker: ᴘʀᴏxʏ_✘_ᴄʜᴇᴄᴋᴇʀ↯</li>
+                            <li class="feature-item"><i class="fas fa-camera me-2 text-accent"></i> Take Website Screenshot: ᴛᴀᴋᴇ_✘_ᴡᴇʙꜱɪᴛᴇ_ꜱᴄʀᴇᴇɴꜱʜᴏᴛ↯</li>
+                            <li class="feature-item"><i class="fas fa-code me-2 text-accent"></i> Download Website Source Code: ᴅᴏᴡɴʟᴏᴀᴅ_✘_ᴡᴇʙꜱɪᴛᴇ_ꜱᴏᴜʀᴄᴇ_ᴄᴏᴅᴇ↯</li>
+                            <li class="feature-item"><i class="fas fa-text-height me-2 text-accent"></i> Extract Text from Image: ᴇxᴛʀᴀᴄᴛ_✘_ᴛᴇxᴛ_ꜰʀᴏᴍ_ɪᴍᴀɢᴇ↯</li>
+                            <li class="feature-item"><i class="fas fa-map-marker-alt me-2 text-accent"></i> Generate Random Address: ɢᴇɴᴇʀᴀᴛᴇ_✘_ʀᴀɴᴅᴏᴍ_ᴀᴅᴅʀᴇꜱꜱ↯</li>
+                            <li class="feature-item"><i class="fas fa-cloud me-2 text-accent"></i> Check Weather: ᴄʜᴇᴄᴋ_✘_ᴡᴇᴀᴛʜᴇʀ↯</li>
+                            <li class="feature-item"><i class="fas fa-users me-2 text-accent"></i> Get User/Group/Channel Info: ɢᴇᴛ_✘_ᴜꜱᴇʀ_ɢʀᴏᴜᴘ_ᴄʜᴀɴɴᴇʟ_ɪɴꜰᴏ↯</li>
+                            <li class="feature-item"><i class="fas fa-question-circle me-2 text-accent"></i> Get Full Help: ɢᴇᴛ_✘_ꜰᴜʟʟ_ʜᴇʟᴘ↯</li>
+                            <li class="feature-item"><i class="fas fa-broadcast-tower me-2 text-accent"></i> Broadcast Admin: ʙʀᴏᴀᴅᴄᴀꜱᴛ_✘_ᴀᴅᴍɪɴ↯</li>
+                            <li class="feature-item"><i class="fas fa-redo me-2 text-accent"></i> Restart Me: ʀᴇꜱᴛᴀʀᴛ_✘_ᴍᴇ↯</li>
+                            <li class="feature-item"><i class="fas fa-database me-2 text-accent"></i> Change Entire Database Settings: ᴄʜᴀɴɢᴇ_✘_ᴇɴᴛɪʀᴇ_ᴅᴀᴛᴀʙᴀꜱᴇ↯</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Requirements -->
+    <section id="requirements" class="container" data-aos="fade-up">
+        <h2>Requirements 💥🌟</h2>
+        <div class="card p-4">
+            <ul>
+                <li><strong>Python 3.9+ 🐍</strong>: Required to run the application seamlessly.</li>
+                <li><strong>3 MongoDB URLs 🌐</strong>: Needed for 3 separate Mongo Clients 🗄️. Ensure your database URLs are correctly configured.</li>
+                <li><strong>Supported OS ❄️</strong>:
+                    <ul>
+                        <li>Ubuntu 💫</li>
+                        <li>Debian  🌟</li>
+                        <li>Windows 💫</li>
+                    </ul>
+                </li>
+                <li><strong>Environment Variables 👀</strong>:
+                    <ul>
+                        <li><code>API_ID</code></li>
+                        <li><code>API_HASH</code></li>
+                        <li><code>BOT_TOKEN</code></li>
+                        <li><code>SESSION_STRING</code></li>
+                    </ul>
+                </li>
+                <li><strong>Additional Info ✘</strong>: Check the Vars List for more configuration details!</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Environment Variables -->
+    <section id="environment-variables" class="container" data-aos="fade-up">
+        <h2>Environment Variables ⚙️</h2>
+        <div class="card p-4">
+            <h3>Mandatory Vars ⁉️</h3>
+            <ul>
+                <li><strong>API_ID 🔐</strong>: Obtain from <a href="https://my.telegram.org" target="_blank" class="text-accent">my.telegram.org</a>.</li>
+                <li><strong>API_HASH 🔐</strong>: Obtain from <a href="https://my.telegram.org" target="_blank" class="text-accent">my.telegram.org</a>.</li>
+                <li><strong>BOT_TOKEN 🤖</strong>: Create a bot via <a href="https://t.me/BotFather" target="_blank" class="text-accent">@BotFather</a>.</li>
+                <li><strong>SESSION_STRING 📲</strong>: Open <a href="https://t.me/ItsSmartToolBot" target="_blank" class="text-accent">@ItsSmartToolBot</a> and use the <code>/pyro</code> command, then follow the instructions.</li>
+                <li><strong>OPENAI_API_KEY 🧠</strong>: Obtain from <a href="https://platform.openai.com" target="_blank" class="text-accent">OpenAI API Console</a>.</li>
+            </ul>
+            <h3>Recommended Optional Vars 🌟</h3>
+            <ul>
+                <li><strong>MONGO_URL 🗄️</strong>: MongoDB database URL for storing user and group settings, obtain from <a href="https://www.mongodb.com" target="_blank" class="text-accent">MongoDB</a>.</li>
+                <li><strong>DATABASE_URL 🗄️</strong>: Alternative MongoDB database URL, obtain from <a href="https://www.mongodb.com" target="_blank" class="text-accent">MongoDB</a>.</li>
+                <li><strong>DB_URL 🗄️</strong>: Additional MongoDB database URL, obtain from <a href="https://www.mongodb.com" target="_blank" class="text-accent">MongoDB</a>.</li>
+                <li><strong>GOOGLE_API_KEY 🧠</strong>: For Google Gemini AI features, obtain from <a href="https://aistudio.google.com" target="_blank" class="text-accent">Google AI Studio</a>.</li>
+                <li><strong>GROQ_API_KEY 🧠</strong>: For Groq AI models, obtain from <a href="https://console.groq.com" target="_blank" class="text-accent">Groq API Console</a>.</li>
+                <li><strong>ADMIN_IDS 👑</strong>: Comma-separated Telegram user IDs for admin access, obtain via <a href="https://t.me/ItsSmartToolBot" target="_blank" class="text-accent">@ItsSmartToolBot</a> with <code>/info</code>.</li>
+                <li><strong>OWNER_IDS 👑</strong>: Comma-separated Telegram user IDs for owner access, obtain via <a href="https://t.me/ItsSmartToolBot" target="_blank" class="text-accent">@ItsSmartToolBot</a> with <code>/info</code>.</li>
+            </ul>
+            <h3>Optional Vars ❄️</h3>
+            <ul>
+                <li><strong>SPOTIFY_CLIENT_ID 🎶</strong>: For Spotify features, obtain from <a href="https://developer.spotify.com/dashboard" target="_blank" class="text-accent">Spotify Developer Dashboard</a>.</li>
+                <li><strong>SPOTIFY_CLIENT_SECRET 🎶</strong>: For Spotify features, obtain from <a href="https://developer.spotify.com/dashboard" target="_blank" class="text-accent">Spotify Developer Dashboard</a>.</li>
+                <li><strong>LOCATIONIQ_API_KEY 📍</strong>: For location-based features, obtain from <a href="https://locationiq.com" target="_blank" class="text-accent">LocationIQ</a>.</li>
+                <li><strong>IPINFO_API_TOKEN 🌍</strong>: For IP geolocation, obtain from <a href="https://ipinfo.io" target="_blank" class="text-accent">IPinfo</a>.</li>
+                <li><strong>NEWS_API_KEY 📰</strong>: For news updates, obtain from the specified news API provider.</li>
+                <li><strong>BIN_KEY 💳</strong>: For BIN lookup, obtain from <a href="https://handyapi.com" target="_blank" class="text-accent">HandyAPI</a>.</li>
+                <li><strong>UPDATE_CHANNEL_URL 📢</strong>: Telegram channel URL for bot updates.</li>
+                <li><strong>DEVELOPER_USER_ID 👨‍💻</strong>: Telegram user ID of the bot developer, obtain via <a href="https://t.me/ItsSmartToolBot" target="_blank" class="text-accent">@ItsSmartToolBot</a> with <code>/info</code>.</li>
+                <li><strong>PROFILE_ERROR_URL 🖼️</strong>: Fallback image URL for users without a profile photo.</li>
+                <li><strong>OCR_WORKER_URL 📄</strong>: Custom OCR API endpoint for text extraction.</li>
+                <li><strong>TEXT_API_URL 📝</strong>: Custom text processing API endpoint.</li>
+                <li><strong>IMAGE_API_URL 🖼️</strong>: Custom image processing API endpoint.</li>
+                <li><strong>YT_COOKIES_PATH 🍪</strong>: Path to YouTube cookies file for media downloads (default: <code>SmartUtilBot/cookies.txt</code>).</li>
+                <li><strong>CC_SCRAPPER_LIMIT 💳</strong>: Limit for credit card scraping (default: 5000).</li>
+                <li><strong>SUDO_CCSCR_LIMIT 💳</strong>: Sudo user credit card scraping limit (default: 10000).</li>
+                <li><strong>MULTI_CCSCR_LIMIT 💳</strong>: Multi-user credit card scraping limit (default: 2000).</li>
+                <li><strong>MAIL_SCR_LIMIT 📧</strong>: Email scraping limit (default: 10000).</li>
+                <li><strong>SUDO_MAILSCR_LIMIT 📧</strong>: Sudo user email scraping limit (default: 15000).</li>
+                <li><strong>CC_GEN_LIMIT 💳</strong>: Credit card generation limit (default: 2000).</li>
+                <li><strong>MULTI_CCGEN_LIMIT 💳</strong>: Multi-user credit card generation limit (default: 5000).</li>
+                <li><strong>DOMAIN_CHK_LIMIT 🌐</strong>: Domain check limit (default: 20).</li>
+                <li><strong>PROXY_CHECK_LIMIT 🛡️</strong>: Proxy check limit (default: 20).</li>
+                <li><strong>IMGAI_SIZE_LIMIT 🖼️</strong>: Max image size for AI processing (default: 5MB).</li>
+                <li><strong>MAX_TXT_SIZE 📝</strong>: Max text file size (default: 15MB).</li>
+                <li><strong>MAX_VIDEO_SIZE 📹</strong>: Max video file size (default: 2GB).</li>
+                <li><strong>VIDEO_RESOLUTION 📺</strong>: YouTube video resolution (default: 1280x720).</li>
+                <li><strong>COMMAND_PREFIX ⚙️</strong>: Command prefixes (default: !|.|#|,|/).</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Installation -->
+    <section id="installation" class="container" data-aos="fade-up">
+        <h2>Installation 🚀</h2>
+        <div class="card p-4">
+            <ol>
+                <li><strong>Clone the Repository</strong>:
+                    <pre>git clone https://github.com/TheSmartDevs/SmartUtilBot.git
+cd SmartUtilBot</pre>
+                </li>
+                <li><strong>Install Dependencies</strong>:
+                    <pre>pip3 install -r requirements.txt</pre>
+                </li>
+                <li><strong>Set Up Environment Variables</strong>:
+                    <p>Create a <code>.env</code> file or edit <code>config.py</code>. Example:</p>
+                    <pre>API_ID=your_api_id
+API_HASH=your_api_hash
+BOT_TOKEN=your_bot_token
+SESSION_STRING=your_session_string</pre>
+                </li>
+                <li><strong>Deploy the Bot</strong>:
+                    <ul>
+                        <li><strong>Direct Deployment</strong>:
+                            <pre>python3 main.py</pre>
+                        </li>
+                        <li><strong>Run with Screen</strong>:
+                            <pre>screen -S SmartUtilBot
+python3 main.py</pre>
+                            <p>Detach: <kbd>Ctrl+A</kbd> then <kbd>D</kbd>. Reattach: <code>screen -r SmartUtilBot</code></p>
+                        </li>
+                        <li><strong>Docker Compose</strong>:
+                            <pre>docker compose up --build --remove-orphans</pre>
+                            <p>Stop: <code>docker compose down</code></p>
+                        </li>
+                    </ul>
+                </li>
+            </ol>
+            <p><strong>Note:</strong> Configure variables in <code>.env</code> or <code>config.py</code>. Default YouTube cookies path: <code>SmartUtilBot/cookies.txt</code>. Use <code>/settings</code> command for dynamic adjustments.</p>
+        </div>
+    </section>
+
+    <!-- YouTube Cookies -->
+    <section id="youtube-cookies" class="container" data-aos="fade-up">
+        <h2>Handling YouTube Download Errors with Cookies 🍪</h2>
+        <div class="card p-4">
+            <p>To avoid YouTube sign-in or bot protection errors, use a cookie file:</p>
+            <h3>Steps to Export and Use Cookies 👀</h3>
+            <ol>
+                <li><strong>Create a Dedicated Chrome Profile</strong>: Use a new profile for security.</li>
+                <li><strong>Install a Cookie Management Extension</strong>: E.g., "Cookie Editor".</li>
+                <li><strong>Export Cookies from YouTube</strong>: Log in, export in Netscape format.</li>
+                <li><strong>Save the Cookies File</strong>: Place as <code>cookies.txt</code> in <code>SmartUtilBot/cookies.txt</code>.</li>
+            </ol>
+            <h3>Managing Cookies 💡</h3>
+            <ul>
+                <li><strong>Cookie Expiry</strong>: Replace if downloads fail.</li>
+                <li><strong>Cookie Depletion</strong>: Avoid excessive requests or restarts.</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Contributing -->
+    <section id="contributing" class="container" data-aos="fade-up">
+        <h2>Contributing 🌟</h2>
+        <div class="card p-4">
+            <p>Contributions are welcome! Follow these steps:</p>
+            <ol>
+                <li>Fork the repository. 🍴</li>
+                <li>Create a branch: <code>git checkout -b feature-branch</code>. 🌿</li>
+                <li>Commit changes: <code>git commit -m 'Add new feature'</code>. 💾</li>
+                <li>Push: <code>git push origin feature-branch</code>. 🚀</li>
+                <li>Open a Pull Request. 📬</li>
+            </ol>
+        </div>
+    </section>
+
+    <!-- Credits -->
+    <section id="credits" class="container" data-aos="fade-up">
+        <h2>Project Developers</h2>
+        <div class="card p-4">
+            <ul>
+                <li><strong>Main Developer</strong>: Abir Arafat Chawdhury - <a href="https://t.me/ISmartDevs" target="_blank" class="text-accent">@TheSmartDev</a></li>
+                <li><strong>Contributor</strong>: Neo Ko Ko Ang - <a href="https://t.me/nkka404" target="_blank" class="text-accent">@nkka404</a></li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Ethical Notice -->
+    <section id="ethical-notice" class="container" data-aos="fade-up">
+        <h2>Ethical Notice 🔔</h2>
+        <div class="card p-4">
+            <blockquote class="blockquote">
+                Ethics Reminder: Simply modifying a few lines of code does not constitute original authorship. When forking a project, always fork responsibly and give proper credit to the original creators.
+            </blockquote>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2025 TheSmartDev. All rights reserved.</p>
+        <div class="social-icons">
+            <a href="https://facebook.com/abirxdhackz" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://github.com/TheSmartDev" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
+            <a href="https://t.me/ISmartDevs" target="_blank" aria-label="Telegram"><i class="fab fa-telegram"></i></a>
+            <a href="https://instagram.com/abirxdhackz" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="https://twitter.com/abirxdhackz" target="_blank" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button id="back-to-top" class="btn"><i class="fas fa-arrow-up"></i></button>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- AOS JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <!-- Custom JS -->
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 1000,
+            once: true
+        });
+
+        // Back to Top Button
+        const backToTop = document.getElementById('back-to-top');
+        window.onscroll = function() {
+            if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
+                backToTop.style.display = 'block';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        };
+
+        backToTop.addEventListener('click', function() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Navbar Scroll Effect
+        const navbar = document.querySelector('.navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+    </script>
+</body>
+</html>
