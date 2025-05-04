@@ -24,7 +24,7 @@
         <div class="container">
             <h1>SmartUtilBot <i class="fab fa-telegram me-2 text-accent"></i></h1>
             <p>Smart Util is the most complete bot designed to assist you with a wide array of tools.</p>
-            <a href="#installation" class="btn btn-custom mt-4">Get Started</a>
+            <a href="https:/github.com/TheSmartDevs/SmartUtilBot" class="btn btn-custom mt-4">Source Code</a>
         </div>
     </header>
 
@@ -43,6 +43,7 @@
                     <li class="nav-item"><a class="nav-link" href="#environment-variables">Config</a></li>
                     <li class="nav-item"><a class="nav-link" href="#installation">Installation</a></li>
                     <li class="nav-item"><a class="nav-link" href="#youtube-cookies">Cookies</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#session-string">Session String</a></li>
                     <li class="nav-item"><a class="nav-link" href="#contidiot">Contribute</a></li>
                     <li class="nav-item"><a class="nav-link" href="#credits">Devs</a></li>
                     <li class="nav-item"><a class="nav-link" href="#ethical-notice">Notice</a></li>
@@ -59,18 +60,18 @@
 
     <!-- Introduction -->
     <section id="introduction" class="container" data-aos="fade-up">
-        <h2>Introduction</h2>
-        <p>SmartUtilBot is a powerful Telegram bot built with Python and Pyrogram, designed to provide a wide range of utilities including credit card scraping, media downloading, AI-powered tools, and more. This bot leverages multiple APIs and services to deliver robust functionality for both casual and advanced users. ✨ Built With assuntos Language And Pyrogram Telethon Framework!</p>
+        <h2>Introduction Of SmartUtilBot</h2>
+        <p>SmartUtilBot is a powerful Telegram bot built with Python and Pyrogram, designed to provide a wide range of utilities including credit card scraping, media downloading, AI-powered tools, and more. This bot leverages multiple APIs and services to deliver robust functionality for both casual and advanced users. ✨ Built With Python Language And Pyrogram Telethon Frameworks!</p>
     </section>
 
     <!-- Features -->
     <section id="features" class="container" data-aos="fade-up">
-        <h2>Features 🌟</h2>
+        <h2>SmartUtilBot's Features 🌟</h2>
         <div class="accordion" id="featuresAccordion">
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingCredit">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCredit" aria-expanded="false" aria-controls="collapseCredit">
-                        Credit Card Tools
+                        CC Utils
                     </button>
                 </h2>
                 <div id="collapseCredit" class="accordion-collapse collapse" aria-labelledby="headingCredit" data-bs-parent="#featuresAccordion">
@@ -95,7 +96,7 @@
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingAI">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAI" aria-expanded="false" aria-controls="collapseAI">
-                        AI Tools
+                        AI AssitantUtils
                     </button>
                 </h2>
                 <div id="collapseAI" class="accordion-collapse collapse" aria-labelledby="headingAI" data-bs-parent="#featuresAccordion">
@@ -113,7 +114,7 @@
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingMedia">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMedia" aria-expanded="false" aria-controls="collapseMedia">
-                        Media Downloaders
+                        Downloader Utils
                     </button>
                 </h2>
                 <div id="collapseMedia" class="accordion-collapse collapse" aria-labelledby="headingMedia" data-bs-parent="#featuresAccordion">
@@ -135,7 +136,7 @@
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingText">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseText" aria-expanded="false" aria-controls="collapseText">
-                        Text & Encoding Tools
+                        Text & Encoder Utils
                     </button>
                 </h2>
                 <div id="collapseText" class="accordion-collapse collapse" aria-labelledby="headingText" data-bs-parent="#featuresAccordion">
@@ -166,7 +167,7 @@
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingMail">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMail" aria-expanded="false" aria-controls="collapseMail">
-                        Mail Tools
+                        Mail Utils
                     </button>
                 </h2>
                 <div id="collapseMail" class="accordion-collapse collapse" aria-labelledby="headingMail" data-bs-parent="#featuresAccordion">
@@ -185,7 +186,7 @@
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingMisc">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMisc" aria-expanded="false" aria-controls="collapseMisc">
-                        Miscellaneous Tools
+                        Miscellaneous Utils
                     </button>
                 </h2>
                 <div id="collapseMisc" class="accordion-collapse collapse" aria-labelledby="headingMisc" data-bs-parent="#featuresAccordion">
@@ -221,10 +222,10 @@
 
     <!-- Requirements -->
     <section id="requirements" class="container" data-aos="fade-up">
-        <h2>Requirements 💥🌟</h2>
+        <h2>SmartUtilBot Requirements 💥🌟</h2>
         <div class="card p-4">
             <ul>
-                <li><strong>Python 3.9+ 🐍</strong>: Required to run the application seamlessly.</li>
+                <li><strong>Python 3.8 Or Over🐍</strong>: Required to run the application seamlessly.</li>
                 <li><strong>3 MongoDB URLs 🌐</strong>: Needed for 3 separate Mongo Clients 🗄️. Ensure your database URLs are correctly configured.</li>
                 <li><strong>Supported OS ❄️</strong>:
                     <ul>
@@ -361,16 +362,55 @@ python3 main.py</pre>
         </div>
     </section>
 
+    <!-- Session String -->
+    <section id="session-string" class="container" data-aos="fade-up">
+        <h2>🌟 Handling Scrapper Utils Errors with SESSION_STRING 💫</h2>
+        <div class="card p-4">
+            <p>Avoid common user client errors by generating a fresh SESSION_STRING using ItsSmartToolBot 🌐</p>
+            <h3>✨ Quick Steps to Generate SESSION_STRING</h3>
+            <ol>
+                <li>🚀 Go to 👉 <a href="https://t.me/ItsSmartToolBot" target="_blank" class="text-accent">@ItsSmartToolBot</a></li>
+                <li>💬 Send <code>/pyro</code> to start Pyrogram session generation</li>
+                <li>🆔 Enter your API ID from <a href="https://my.telegram.org" target="_blank" class="text-accent">my.telegram.org</a></li>
+                <li>🔐 Enter your API HASH</li>
+                <li>📞 Input your phone number in international format (e.g., +880...) 🇧🇩</li>
+                <li>✅ Send the OTP you receive (e.g., AB2 BC4 CD5 EF6 GH6) — the bot auto-extracts it as 24566</li>
+                <li>💾 Check Saved Messages for your SESSION_STRING</li>
+                <li>🛠️ Add it to your <code>.env</code> or <code>config.py</code></li>
+            </ol>
+            <h3>❄️ Important Notice: Avoid Frequent Restarts ⚠️</h3>
+            <p>Frequent restarts using user accounts can trigger Telegram's security system 👀</p>
+            <h3>💥 You Might Face:</h3>
+            <ul>
+                <li>🚫 Forced logout of your account</li>
+                <li>❌ 406 AUTH_KEY_DUPLICATED error</li>
+                <li>⚠️ Temporary bans or session invalidation</li>
+            </ul>
+            <h3>⭐️ To Stay Safe:</h3>
+            <ul>
+                <li>Minimize restarts</li>
+                <li>Always use a fresh session if errors appear</li>
+                <li>Prefer bot accounts for heavy or persistent tasks</li>
+            </ul>
+            <h3>✅ Pro Tips</h3>
+            <ul>
+                <li>Fresh sessions fix 90% of scraper issues</li>
+                <li>Never share your SESSION_STRING publicly</li>
+                <li>Edit the <code>.env</code> file for secure config management</li>
+            </ul>
+        </div>
+    </section>
+
     <!-- Contributing -->
     <section id="contidiot" class="container" data-aos="fade-up">
         <h2>Contributing 🌟</h2>
         <div class="card p-4">
-            <p>Contributions are welcome! Follow these steps:</p>
+            <p>Contributions are always welcome! Please follow these steps:</p>
             <ol>
                 <li>Fork the repository. 🍴</li>
-                <li>Create a branch: <code>git checkout -b feature-branch</code>. 🌿</li>
-                <li>Commit changes: <code>git commit -m 'Add new feature'</code>. 💾</li>
-                <li>Push: <code>git push origin feature-branch</code>. 🚀</li>
+                <li>Create a new branch (<code>git checkout -b feature-branch</code>). 🌿</li>
+                <li>Commit your changes (<code>git commit -m 'Add new feature'</code>). 💾</li>
+                <li>Push to the branch (<code>git push origin feature-branch</code>). 🚀</li>
                 <li>Open a Pull Request. 📬</li>
             </ol>
         </div>
@@ -378,12 +418,25 @@ python3 main.py</pre>
 
     <!-- Credits -->
     <section id="credits" class="container" data-aos="fade-up">
-        <h2>Project Developers</h2>
+        <h2>Project Contributors</h2>
         <div class="card p-4">
+            <h3>Main Author 🧑‍💻</h3>
+            <p>The Main Author Is Abir Arafat Chawdhury Who Made The Base Development Of SmartUtilBot</p>
             <ul>
-                <li><strong>Main Developer</strong>: Abir Arafat Chawdhury - <a href="https://t.me/ISmartDevs" target="_blank" class="text-accent">@TheSmartDev</a></li>
-                <li><strong>Contributor</strong>: Neo Ko Ko Ang - <a href="https://t.me/nkka404" target="_blank" class="text-accent">@nkka404</a></li>
+                <li><strong>Name</strong>: Abir Arafat Chawdhury 🌟</li>
+                <li><strong>Telegram Contact</strong>: <a href="https://t.me/ISmartDevs" target="_blank" class="text-accent">@ISmartDevs</a> ✅</li>
+                <li><strong>Telegram Channel</strong>: <a href="https://t.me/TheSmartDev" target="_blank" class="text-accent">@TheSmartDev</a> ✅</li>
+                <li><strong>Bot</strong>: <a href="https://t.me/ItsSmartToolBot" target="_blank" class="text-accent">@ItsSmartToolBot</a> ✅</li>
             </ul>
+            <h3>Contributing Author 🧑‍💻</h3>
+            <p>The Contributor For Many Features Adding Scripts AND APIS He Is Just A PRO</p>
+            <ul>
+                <li><strong>Name</strong>: Neo Ko Ko Ang</li>
+                <li><strong>Telegram Contact</strong>: <a href="https://t.me/nkka404" target="_blank" class="text-accent">@nkka404</a> ✅</li>
+                <li><strong>Telegram Channel</strong>: <a href="https://t.me/premium_channel_404" target="_blank" class="text-accent">@premium_channel_404</a> ✅</li>
+                <li><strong>Bot</strong>: <a href="https://t.me/SmartTool404Bot" target="_blank" class="text-accent">@SmartTool404Bot</a> ✅</li>
+            </ul>
+            <p>For inquiries or feedback, please feel free to reach out via Telegram.</p>
         </div>
     </section>
 
