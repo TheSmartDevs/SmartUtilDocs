@@ -24,7 +24,7 @@
         <div class="container">
             <h1>SmartUtilBot <i class="fab fa-telegram me-2 text-accent"></i></h1>
             <p>Smart Util is the most complete bot designed to assist you with a wide array of tools.</p>
-            <a href="https:/github.com/TheSmartDevs/SmartUtilBot" class="btn btn-custom mt-4">Source Code</a>
+            <a href="https://github.com/TheSmartDevs/SmartUtilBot" class="btn btn-custom mt-4">Source Code</a>
         </div>
     </header>
 
@@ -342,6 +342,76 @@ python3 main.py</pre>
         </div>
     </section>
 
+    <!-- Heroku Deployment -->
+    <section id="heroku" class="container" data-aos="fade-up">
+        <h2>Deploy to Heroku With One Click</h2>
+        <div class="card p-4">
+            <p><a href="https://www.heroku.com/deploy/?template=https://github.com/TheSmartDevs/SmartUtilBot"><img src="https://www.herokucdn.com/deploy/button.svg" alt="Deploy"></a></p>
+            <h3>Heroku Deployment Tutorial With CLI</h3>
+            <p>Deploying <strong>SmartUtilBot</strong> to Heroku is a straightforward process. Follow these steps to get your bot running on Heroku:</p>
+            <ol>
+                <li><strong>Create a Heroku Account</strong>:
+                    <p>Sign up for a free account at <a href="https://www.heroku.com/" target="_blank" class="text-accent">Heroku</a> if you don’t already have one.</p>
+                </li>
+                <li><strong>Install Heroku CLI</strong>:
+                    <p>Download and install the Heroku Command Line Interface (CLI) from <a href="https://devcenter.heroku.com/articles/heroku-cli" target="_blank" class="text-accent">Heroku Dev Center</a>.</p>
+                    <p>Verify installation by running:</p>
+                    <pre>heroku --version</pre>
+                </li>
+                <li><strong>Log in to Heroku</strong>:
+                    <p>Run the following command and follow the prompts to log in:</p>
+                    <pre>heroku login</pre>
+                </li>
+                <li><strong>Clone the Repository</strong>:
+                    <p>If you haven’t already, clone the SmartUtilBot repository:</p>
+                    <pre>git clone https://github.com/TheSmartDevs/SmartUtilBot.git
+cd SmartUtilBot</pre>
+                </li>
+                <li><strong>Create a Heroku App</strong>:
+                    <p>Create a new Heroku app by running:</p>
+                    <pre>heroku create your-app-name</pre>
+                    <p>Replace <code>your-app-name</code> with a unique name for your app.</p>
+                </li>
+                <li><strong>Install FFmpeg Buildpack</strong>:
+                    <p>Heroku requires a buildpack to install FFmpeg. Add the FFmpeg buildpack to your app:</p>
+                    <pre>heroku buildpacks:add https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest.git -a your-app-name</pre>
+                    <p>Add the Python buildpack as well:</p>
+                    <pre>heroku buildpacks:add heroku/python -a your-app-name</pre>
+                </li>
+                <li><strong>Set Environment Variables</strong>:
+                    <p>Configure the mandatory and optional environment variables (see <a href="#environment-variables">Environment Variables</a>) in Heroku:</p>
+                    <pre>heroku config:set API_ID=your_api_id -a your-app-name
+heroku config:set API_HASH=your_api_hash -a your-app-name
+heroku config:set BOT_TOKEN=your_bot_token -a your-app-name
+heroku config:set SESSION_STRING=your_session_string -a your-app-name
+heroku config:set OPENAI_API_KEY=your_openai_key -a your-app-name
+heroku config:set MONGO_URL=your_mongo_url -a your-app-name
+heroku config:set DATABASE_URL=your_database_url -a your-app-name
+heroku config:set DB_URL=your_db_url -a your-app-name</pre>
+                    <p>Add optional variables as needed, such as <code>GOOGLE_API_KEY</code>, <code>GROQ_API_KEY</code>, etc.</p>
+                </li>
+                <li><strong>Deploy the Bot</strong>:
+                    <p>Push the code to Heroku:</p>
+                    <pre>git push heroku main</pre>
+                    <p>Scale the dyno to run the bot:</p>
+                    <pre>heroku ps:scale worker=1 -a your-app-name</pre>
+                </li>
+                <li><strong>Verify Deployment</strong>:
+                    <p>Check the logs to ensure the bot is running:</p>
+                    <pre>heroku logs --tail -a your-app-name</pre>
+                    <p>Interact with your bot on Telegram to confirm it’s operational.</p>
+                </li>
+                <li><strong>Managing FFmpeg on Heroku</strong>:
+                    <p>The FFmpeg buildpack automatically installs FFmpeg during deployment. No manual installation is required, unlike local setups.</p>
+                    <p>If you encounter issues with FFmpeg, ensure the buildpack was added correctly and redeploy:</p>
+                    <pre>git commit --allow-empty -m "Redeploy for FFmpeg"
+git push heroku main</pre>
+                </li>
+            </ol>
+            <p><strong>Note</strong>: Heroku’s free tier has limitations, such as dyno hours and sleep periods. Consider upgrading to a paid plan for persistent bot availability. Ensure your <code>.env</code> or <code>config.py</code> settings are correctly mirrored in Heroku’s config vars.</p>
+        </div>
+    </section>
+
     <!-- YouTube Cookies -->
     <section id="youtube-cookies" class="container" data-aos="fade-up">
         <h2>Handling YouTube Download Errors with Cookies 🍪</h2>
@@ -361,7 +431,6 @@ python3 main.py</pre>
             </ul>
         </div>
     </section>
-
     <!-- Session String -->
     <section id="session-string" class="container" data-aos="fade-up">
         <h2>🌟 Handling Scrapper Utils Errors with SESSION_STRING 💫</h2>
@@ -464,6 +533,31 @@ python3 main.py</pre>
 
     <!-- Back to Top Button -->
     <button id="back-to-top" class="btn"><i class="fas fa-arrow-up"></i></button>
+
+    <!-- Inline Script to Fix Accordion Auto-Open -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Force collapse for Text, Mail, and Miscellaneous Utils
+            const textCollapse = document.querySelector('#collapseText');
+            const mailCollapse = document.querySelector('#collapseMail');
+            const miscCollapse = document.querySelector('#collapseMisc');
+            if (textCollapse && textCollapse.classList.contains('show')) {
+                textCollapse.classList.remove('show');
+                document.querySelector('#headingText .accordion-button').classList.add('collapsed');
+                document.querySelector('#headingText .accordion-button').setAttribute('aria-expanded', 'false');
+            }
+            if (mailCollapse && mailCollapse.classList.contains('show')) {
+                mailCollapse.classList.remove('show');
+                document.querySelector('#headingMail .accordion-button').classList.add('collapsed');
+                document.querySelector('#headingMail .accordion-button').setAttribute('aria-expanded', 'false');
+            }
+            if (miscCollapse && miscCollapse.classList.contains('show')) {
+                miscCollapse.classList.remove('show');
+                document.querySelector('#headingMisc .accordion-button').classList.add('collapsed');
+                document.querySelector('#headingMisc .accordion-button').setAttribute('aria-expanded', 'false');
+            }
+        });
+    </script>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
